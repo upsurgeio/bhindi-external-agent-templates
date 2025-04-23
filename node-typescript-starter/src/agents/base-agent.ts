@@ -1,5 +1,5 @@
 import { Request } from "express";
-import { Tool, ToolsResponse } from "../types/tools";
+import { Tool, ToolsResponse } from "../types";
 
 export interface AgentTools {
   requiresAuth: boolean;
