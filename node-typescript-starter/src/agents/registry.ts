@@ -1,15 +1,9 @@
 import { AgentHandler } from "./base-agent";
-import { CalculatorAgent } from "./calculator";
-import { TwitterAgent } from "./twitter";
-import { RedisAgent } from "./redis";
-import { CalculatorTools } from "./calculator/tools";
-import { TwitterTools } from "./twitter/tools";
-import { RedisTools } from "./redis/tools";
+import { SpotifyAgent } from "./spotify";
+import { SpotifyTools } from "./spotify/tools";
 
 export type AgentMap = {
-  calculator: AgentHandler<CalculatorTools>;
-  twitter: AgentHandler<TwitterTools>;
-  redis: AgentHandler<RedisTools>;
+  spotify: AgentHandler<SpotifyTools>;
 };
 
 export class AgentRegistry {
@@ -29,9 +23,7 @@ export class AgentRegistry {
   }
 
   private registerDefaultAgents() {
-    this.registerAgent("calculator", new CalculatorAgent());
-    this.registerAgent("twitter", new TwitterAgent());
-    this.registerAgent("redis", new RedisAgent());
+    this.registerAgent("spotify", new SpotifyAgent());
   }
 
   public registerAgent<K extends keyof AgentMap>(
