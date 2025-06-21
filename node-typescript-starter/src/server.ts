@@ -1,7 +1,11 @@
 import express, { Router, RequestHandler, Request, Response } from "express";
 import { createErrorResponse } from "./utils/response";
 import { AgentMap, AgentRegistry } from "./agents/registry";
-import { checkApiKey, checkBearerToken } from "./middleware/auth";
+import {
+  checkApiKey,
+  checkOAuthTokens,
+  checkVariables,
+} from "./middleware/auth";
 
 interface AgentParams {
   agent: string;
@@ -78,21 +82,32 @@ const executeToolHandler: RequestHandler<{
     return;
   }
 
-  const tools = agentHandler.getTools();
-  let bearerToken: string | undefined;
-  if (tools.requiresAuth) {
-    const validateBearerTokenResponse = checkBearerToken(req);
-    if (!validateBearerTokenResponse.success) {
-      res.status(401).json(validateBearerTokenResponse);
+  const agentInfo = agentHandler.getAgentInfo();
+  let oauthTokens: Record<string, string> | undefined;
+  if (agentInfo.oauth.length > 0) {
+    const validateOAuthTokensResponse = checkOAuthTokens(req, agentInfo.oauth);
+    if (!validateOAuthTokensResponse.success) {
+      res.status(401).json(validateOAuthTokensResponse);
       return;
     }
-    bearerToken = (validateBearerTokenResponse as any).token;
+    oauthTokens = validateOAuthTokensResponse.tokens;
+  }
+
+  let variables: Record<string, string> | undefined;
+  if (agentInfo.variables.length > 0) {
+    const validateVariablesResponse = checkVariables(req, agentInfo.variables);
+    if (!validateVariablesResponse.success) {
+      res.status(401).json(validateVariablesResponse);
+      return;
+    }
+    variables = validateVariablesResponse.variables;
   }
 
   const result = await (agentHandler as any).executeTool(
     toolName,
     parameters,
-    bearerToken
+    oauthTokens,
+    variables
   );
   if (result.success) {
     res.json(result).status(200);

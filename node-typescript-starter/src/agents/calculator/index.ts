@@ -4,7 +4,7 @@ import { CalculatorTools, calculatorTools } from "./tools";
 
 export class CalculatorAgent extends BaseAgentHandler<CalculatorTools> {
   constructor() {
-    super(calculatorTools, false);
+    super(calculatorTools, [], []);
   }
 
   async executeTool<K extends keyof CalculatorTools>(

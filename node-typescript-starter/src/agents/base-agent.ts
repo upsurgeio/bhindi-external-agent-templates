@@ -1,34 +1,43 @@
-import { Request } from "express";
-import { Tool, ToolsResponse } from "../types";
+import { SupportedOAuth, Tool, AgentInfo } from "../types";
 
 export interface AgentTools {
-  requiresAuth: boolean;
   tools: Tool[];
 }
 
 export interface AgentHandler<T extends Record<string, any>> {
-  getTools(): ToolsResponse;
+  getAgentInfo(): AgentInfo;
   executeTool<K extends keyof T>(
     toolName: K,
     parameters: T[K],
-    bearerToken?: string
+    oauthTokens?: Record<SupportedOAuth, string>,
+    variables?: Record<string, string>
   ): Promise<any>;
+  getTools(): AgentTools;
 }
 
 export abstract class BaseAgentHandler<T extends Record<string, any>>
   implements AgentHandler<T>
 {
   protected tools: Tool[];
-  protected requiresAuth: boolean;
+  protected oauth: SupportedOAuth[];
+  protected variables: string[];
 
-  constructor(tools: Tool[], requiresAuth: boolean = false) {
+  constructor(tools: Tool[], oauth: SupportedOAuth[], variables: string[]) {
     this.tools = tools;
-    this.requiresAuth = requiresAuth;
+    this.oauth = oauth;
+    this.variables = variables;
   }
 
-  getTools(): ToolsResponse {
+  getAgentInfo() {
     return {
-      requiresAuth: this.requiresAuth,
+      tools: this.tools,
+      oauth: this.oauth,
+      variables: this.variables,
+    };
+  }
+
+  getTools() {
+    return {
       tools: this.tools,
     };
   }
@@ -36,6 +45,7 @@ export abstract class BaseAgentHandler<T extends Record<string, any>>
   abstract executeTool<K extends keyof T>(
     toolName: K,
     parameters: T[K],
-    bearerToken?: string
+    oauthTokens?: Record<SupportedOAuth, string>,
+    variables?: Record<string, string>
   ): Promise<any>;
 }

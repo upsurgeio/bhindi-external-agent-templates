@@ -20,6 +20,5 @@ export const twitterTools: Tool[] = [
       },
       required: ["content"],
     },
-    visibleParameters: ["content"],
   },
 ];

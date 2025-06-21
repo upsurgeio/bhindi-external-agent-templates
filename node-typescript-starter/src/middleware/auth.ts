@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { ENV } from "../utils/env";
 import { createErrorResponse } from "../utils/response";
+import { SupportedOAuth } from "../types";
 
 export const checkApiKey = (req: Request) => {
   const apiKey = req.headers["x-api-key"];
@@ -12,18 +13,58 @@ export const checkApiKey = (req: Request) => {
   return { success: true };
 };
 
-export const checkBearerToken = (req: Request) => {
-  const authHeader = req.headers.authorization;
+export const checkOAuthTokens = (req: Request, oauth: SupportedOAuth[]) => {
+  const missingTokens: string[] = [];
+  const presentTokens: Record<string, string> = {};
 
-  if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return createErrorResponse("Bearer token missing", 401);
+  for (const oauthProvider of oauth) {
+    const token = req.headers[`x-${oauthProvider}-token`];
+
+    if (!token) {
+      missingTokens.push(oauthProvider);
+    } else {
+      presentTokens[oauthProvider] = token as string;
+    }
   }
 
-  const token = authHeader.split(" ")[1];
-
-  if (!token) {
-    return createErrorResponse("Bearer token required", 401);
+  // If any required tokens are missing, return error
+  if (missingTokens.length > 0) {
+    return createErrorResponse(
+      `Missing OAuth tokens: ${missingTokens.join(", ")}`,
+      401
+    );
   }
 
-  return { success: true, token: token };
+  // All tokens are present
+  return {
+    success: true,
+    tokens: presentTokens,
+  };
+};
+
+export const checkVariables = (req: Request, variables: string[]) => {
+  const missingVariables: string[] = [];
+  const presentVariables: Record<string, string> = {};
+
+  for (const variable of variables) {
+    const value = req.headers[`x-${variable}`];
+
+    if (!value) {
+      missingVariables.push(variable);
+    } else {
+      presentVariables[variable] = value as string;
+    }
+  }
+
+  if (missingVariables.length > 0) {
+    return createErrorResponse(
+      `Missing variables: ${missingVariables.join(", ")}`,
+      401
+    );
+  }
+
+  return {
+    success: true,
+    variables: presentVariables,
+  };
 };

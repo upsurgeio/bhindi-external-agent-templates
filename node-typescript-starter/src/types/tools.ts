@@ -51,11 +51,9 @@ export interface Tool {
   name: string;
   description: string;
   parameters: ToolParameter;
-  visibleParameters: string[];
 }
 
 export interface ToolsResponse {
-  requiresAuth: boolean;
   tools: Tool[];
 }
 
@@ -67,4 +65,48 @@ export interface ToolExecutionRequest {
 export interface ToolExecutionResponse {
   result: any;
   media?: MediaItem[];
+}
+
+export type SupportedOAuth =
+  | "twitter"
+  | "google-gmail"
+  | "google-calendar"
+  | "google-docs"
+  | "google-sheets"
+  | "slack"
+  | "notion"
+  | "trello"
+  | "github"
+  | "google-forms"
+  | "reddit"
+  | "typeform";
+
+export enum OAuthType {
+  TWITTER = "twitter",
+  GOOGLE_GMAIL = "google-gmail",
+  GOOGLE_CALENDAR = "google-calendar",
+  GOOGLE_DOCS = "google-docs",
+  GOOGLE_SHEETS = "google-sheets",
+  SLACK = "slack",
+  NOTION = "notion",
+  TRELLO = "trello",
+  GITHUB = "github",
+  GOOGLE_FORMS = "google-forms",
+  REDDIT = "reddit",
+  TYPEFORM = "typeform",
+}
+
+export interface AgentInfo {
+  tools: Tool[];
+  oauth: SupportedOAuth[];
+  variables: string[];
+}
+
+export interface ErrorResponse {
+  success: false;
+  error: {
+    message: string;
+    code: number;
+    details: string;
+  };
 }

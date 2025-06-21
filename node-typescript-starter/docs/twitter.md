@@ -10,7 +10,8 @@
   type: 'external',
   endpoint: '[YOUR_API_ENDPOINT]',
   apiKey: 'twitter',
-  requiresAuth: true,
+  oauth: ['twitter'],
+  variables: [],
   author: 'kalash'
 }
 ```
@@ -20,17 +21,17 @@
 ### List tools
 
 ```bash
-curl -X GET "http://localhost:3000/twitter/tools" \
--H "x-api-key: twitter" \
+curl -X GET "[YOUR_API_ENDPOINT]/twitter/tools" \
+-H "x-api-key: [YOUR_SERVER_API_KEY]" \
 -H "Content-Type: application/json"
 ```
 
 ### Execute tool - tweet
 
 ```bash
-curl -X POST "http://localhost:3000/twitter/tools/tweet" \
--H "x-api-key: test-api-key" \
--H "Authorization: Bearer test-token" \
+curl -X POST "[YOUR_API_ENDPOINT]/twitter/tools/tweet" \
+-H "x-api-key: [YOUR_SERVER_API_KEY]" \
+-H "x-twitter-token: test-token" \
 -H "Content-Type: application/json" \
 -d '{"content": "Hello, world!"}'
 ```

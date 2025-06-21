@@ -1,4 +1,4 @@
-import { MediaType, MediaItem } from "../types";
+import { MediaType, MediaItem, ErrorResponse } from "../types";
 
 /**
  * Creates a standardized success response object
@@ -28,7 +28,7 @@ export const createErrorResponse = (
   message: string,
   code: number = 500,
   details: string = ""
-) => {
+): ErrorResponse => {
   return {
     success: false,
     error: {

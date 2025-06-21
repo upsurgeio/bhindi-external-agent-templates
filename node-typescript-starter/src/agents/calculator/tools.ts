@@ -29,7 +29,6 @@ export const calculatorTools: Tool[] = [
       },
       required: ["a", "b"],
     },
-    visibleParameters: ["a", "b"],
   },
   {
     name: "subtract",
@@ -48,6 +47,5 @@ export const calculatorTools: Tool[] = [
       },
       required: ["a", "b"],
     },
-    visibleParameters: ["a", "b"],
   },
 ];
